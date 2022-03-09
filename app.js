@@ -22,6 +22,14 @@ app.set("view engine", "ejs")
 app.set("views", path.join(__dirname, "views"))
 
 
+app.get("/emp", (req,res) => {
+    res.render("emp")
+})
+
+app.get("/customer", (req,res) => {
+    res.render("customer")
+})
+
 app.get("/", (req, res) => {
     res.render("home")
 })

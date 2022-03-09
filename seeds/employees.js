@@ -4,6 +4,7 @@ const Employee = require("../models/employee")
 mongoose.connect('mongodb://localhost:27017/curbside-pickup');
 
 const createEmployee = async () => {
+    await Employee.deleteMany({})
     const employee = new Employee({
         firstName: "Castor",
         lastName: "Velasquez"

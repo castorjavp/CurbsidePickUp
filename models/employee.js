@@ -6,6 +6,6 @@ const employeeSchema = new Schema({
     lastName: String
 })
 
-const Employee = mongoose.model("Employee". employeeSchema);
+const Employee = mongoose.model("Employee",employeeSchema);
 
 module.exports = Employee
