@@ -9,7 +9,6 @@ const random = (items) => items[Math.floor(Math.random()*items.length)];
 
 const generateOrder = async () => {
     const order = new Order({
-        status: 'NOT READY'
     })
     let rand = Math.floor(Math.random()*4)
     for(let i = 0; i <= rand; i++){

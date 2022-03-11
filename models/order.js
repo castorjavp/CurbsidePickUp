@@ -3,9 +3,11 @@ const Schema = mongoose.Schema
 
 const orderSchema = new Schema({
     products: [{type: Schema.Types.ObjectId, ref:"Product"}],
-    status: {
-      Type: String,
-      enum: ['NOT READY', 'READY FOR PICKUP', 'CHECKED IN', 'DONE']
+    status_: {
+      type: String,
+      lowercase: true,
+      enum: ['not ready', 'ready for pickup', 'checked in', 'done'],
+      default: 'not ready'
     }
 })
 
