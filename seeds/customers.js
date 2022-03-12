@@ -31,6 +31,9 @@ const generateCustomers = async () => {
         })
         let rand = Math.floor(Math.random()*2)
         for(let i = 0; i <= rand; i++){
+            const order = await generateOrder()
+            order.customer = customer
+            await order.save()
             customer.orders.push(await generateOrder())
         }
         await customer.save()

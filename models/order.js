@@ -8,6 +8,9 @@ const orderSchema = new Schema({
       lowercase: true,
       enum: ['not ready', 'ready for pickup', 'checked in', 'done'],
       default: 'not ready'
+    },
+    customer: {
+      type: Schema.Types.ObjectId, ref:"Customer"
     }
 })
 
