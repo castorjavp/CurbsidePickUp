@@ -34,7 +34,7 @@ const generateCustomers = async () => {
             const order = await generateOrder()
             order.customer = customer
             await order.save()
-            customer.orders.push(await generateOrder())
+            customer.orders.push(order)
         }
         await customer.save()
     }
