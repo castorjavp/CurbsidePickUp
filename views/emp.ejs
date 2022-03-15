@@ -37,13 +37,20 @@
             </div>
         </div>
         <div>
-            <ul id="interest-list">
+            <div id="interest-list" class="list-group">
                 <% for(let order of orders) {%> 
                     <% if(order.status_ == 'not ready') { %>  
-                        <a href=""><li><%= order._id%></li></a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                              <h5 class="mb-1"><%=order.customer.firstName %> <%=order.customer.lastName %>    <small>(<%=order.customer.phoneNumber.toString().slice(0,3) %>)<%=order.customer.phoneNumber.toString().slice(3,6) %>-<%=order.customer.phoneNumber.toString().slice(6,11) %></small> </h5>
+                              <button type="button" class="btn btn-dark">Ready</button>
+                            </div>
+                            <p class="mb-1"><%=order._id %></p>
+                            <small><%=order.products[0].name %></small>
+                          </a>
                     <% } %> 
-                <% } %> 
-            </ul>
+                <% } %>
+            </div> 
         </div>
     </div>
 

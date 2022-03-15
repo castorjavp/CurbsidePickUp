@@ -27,7 +27,7 @@ app.set("views", path.join(__dirname, "views"))
 
 
 app.get("/emp", async (req,res) => {
-    const orders = await Order.find({})
+    const orders = await Order.find({}).populate("customer").populate("products")
     res.render("emp", {orders})
 })
 
@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
     console.log("CONNECTIONNN")
     socket.on("change", async (status_) => {
-        const orders = await Order.find({})
+        const orders = await Order.find({}).populate("customer").populate("products")
         console.log(status_)
         io.emit("change", {orders, status_})
     })

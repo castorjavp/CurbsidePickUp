@@ -8,18 +8,34 @@ let status_ = ""
 
 socket.on("change", (data) => {
     let {orders, status_} = data
-    console.log(status_)
     while(list.firstChild){
         list.removeChild(list.lastChild)
     }
     for(let order of orders){
-        console.log(order.status)
         if(order.status_ == status_){
             let a = document.createElement("a")
-            a.href = ""
-            let li = document.createElement("li")
-            a.appendChild(li)
-            li.appendChild(document.createTextNode(order._id))
+            a.href = "#"
+            a.classList.add("list-group-item", "list-group-item-action")
+            let div = document.createElement("div")
+            div.classList.add("d-flex", "w-100", "justify-content-between")
+            a.appendChild(div)
+            let h5 = document.createElement("h5")
+            h5.classList.add("mb-1")
+            // h5.textContent = order.customer.firstName + " " + order.customer.lastName + "     ("+ order.customer.phoneNumber.toString().slice(0,3) + ")" + order.customer.phoneNumber.toString().slice(3,6) + "-" + order.customer.phoneNumber.toString().slice(6,11)
+            h5.textContent = order.customer.firstName + " " + order.customer.lastName
+            div.appendChild(h5)
+            let btn = document.createElement("button")
+            btn.type = "button"
+            btn.classList.add("btn", "btn-dark")
+            btn.textContent = "Ready"
+            div.appendChild(btn)
+            let p = document.createElement("p")
+            p.classList.add("mb-1")
+            p.textContent = order._id
+            a.appendChild(p)
+            let small = document.createElement("small")
+            small.textContent = order.products[0].name
+            a.appendChild(small)
             list.appendChild(a)
         }
     }
