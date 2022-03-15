@@ -48,6 +48,15 @@ io.on("connection", (socket) => {
         console.log(status_)
         io.emit("change", {orders, status_})
     })
+    socket.on("changeOrderStatus", async (data) => {
+        const order = await Order.findById(data.id)
+        if(data.type == "Ready"){
+            order.status_ = "ready for pickup"
+        }
+        await order.save()
+        const orders = await Order.find({}).populate("customer").populate("products")
+        io.emit("change", {orders, status_:"not ready"})
+    })
 })
 
 server.listen(3000, () => {
