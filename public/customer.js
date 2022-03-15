@@ -8,16 +8,9 @@ let btns = document.getElementsByClassName("app-btn")
 let status_ = ""
 let current_tab = "not ready"
 
-for(let btn of btns){
-    btn.addEventListener("click", async () => {
-        data = {id:btn.getAttribute("value"), type:btn.textContent}
-        socket.emit("changeOrderStatus", data)
-    })
-}
-
-socket.on("changeEmp", (data) => {
+socket.on("changeCust", (data) => {
     let {orders, status_} = data
-    if(status_ == "current-tab"){
+    if(status_ == "current_tab"){
         status_ = current_tab
     }
     while(list.firstChild){
@@ -35,7 +28,7 @@ socket.on("changeEmp", (data) => {
             h5.classList.add("mb-1")
             h5.textContent = order.customer.firstName + " " + order.customer.lastName + "  -  ("+ order.customer.phoneNumber.toString().slice(0,3) + ")" + order.customer.phoneNumber.toString().slice(3,6) + "-" + order.customer.phoneNumber.toString().slice(6,11)
             div.appendChild(h5)
-            if(order.status_ == 'not ready' || order.status_ == "checked in"){
+            if(order.status_ == 'ready for pickup'){
                 let btn = document.createElement("button")
                 btn.type = "button"
                 btn.classList.add("btn", "btn-dark", "app-btn")
@@ -44,13 +37,8 @@ socket.on("changeEmp", (data) => {
                     data = {id:btn.getAttribute("value"), type:btn.textContent}
                     socket.emit("changeOrderStatus", data)
                 })
-                if(order.status_ == 'not ready') {
-                    btn.textContent = "Ready"
-                }else{
-                    btn.textContent = "Done"
-                }
+                btn.textContent = "Check In"
                 div.appendChild(btn)
-
             }
             let p = document.createElement("p")
             p.classList.add("mb-1")
@@ -68,20 +56,20 @@ socket.on("changeEmp", (data) => {
 checkedInBtn.addEventListener("click", () => {
     status_ = "checked in"
     current_tab = "checked in"
-    socket.emit("changeEmp", status_)
+    socket.emit("changeCust", status_)
 })
 notReadyBtn.addEventListener("click", () => {
     status_ = "not ready"
     current_tab = "not ready"
-    socket.emit("changeEmp", status_)
+    socket.emit("changeCust", status_)
 })
 readyBtn.addEventListener("click", () => {
     status_ = "ready for pickup"
     current_tab = "ready for pickup"
-    socket.emit("changeEmp", status_)
+    socket.emit("changeCust", status_)
 })
 doneBtn.addEventListener("click", () => {
     status_ = "done"
     current_tab = "done"
-    socket.emit("changeEmp", status_)
+    socket.emit("changeCust", status_)
 })

@@ -31,8 +31,9 @@ app.get("/emp", async (req,res) => {
     res.render("emp", {orders})
 })
 
-app.get("/customer", (req,res) => {
-    res.render("customer")
+app.get("/customer", async (req,res) => {
+    const orders = await Order.find({}).populate("customer").populate("products")
+    res.render("customer", {orders})
 })
 
 app.get("/", (req, res) => {
@@ -43,19 +44,40 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("CONNECTIONNN")
-    socket.on("change", async (status_) => {
+    socket.on("changeEmp", async (status_) => {
         const orders = await Order.find({}).populate("customer").populate("products")
         console.log(status_)
-        io.emit("change", {orders, status_})
+        io.emit("changeEmp", {orders, status_})
+    })
+    socket.on("changeCust", async (status_) => {
+        const orders = await Order.find({}).populate("customer").populate("products")
+        console.log(status_)
+        io.emit("changeCust", {orders, status_})
     })
     socket.on("changeOrderStatus", async (data) => {
         const order = await Order.findById(data.id)
+        let status_ = ""
         if(data.type == "Ready"){
             order.status_ = "ready for pickup"
+            status_ = "not ready"
+        }
+        else if(data.type == "Done"){
+            order.status_ = 'done'
+            status_ = 'checked in'
+        }
+        else if(data.type == "Check In"){
+            order.status_ = 'checked in'
+            status_ = 'ready for pickup'
         }
         await order.save()
         const orders = await Order.find({}).populate("customer").populate("products")
-        io.emit("change", {orders, status_:"not ready"})
+        if(status_ == 'ready for pick up'){
+            io.emit("changeCust", {orders, status_})
+            io.emit("changeEmp", {orders, status_:"current_tab"})
+        }else{
+        io.emit("changeEmp", {orders, status_})
+        io.emit("changeCust", {orders, status_:"current_tab"})
+        }
     })
 })
 
