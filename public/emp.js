@@ -5,83 +5,79 @@ let readyBtn = document.getElementById("ready-btn")
 let doneBtn = document.getElementById("right-button")
 let list = document.getElementById("interest-list")
 let btns = document.getElementsByClassName("app-btn")
-let status_ = ""
-let current_tab = "not ready"
+let statusButtons = [checkedInBtn, notReadyBtn, readyBtn, doneBtn]
+const radioButtons = document.querySelectorAll(".pickup-list .row .btn-group input")
 
-for(let btn of btns){
+
+for (let btn of btns) {
     btn.addEventListener("click", async () => {
-        data = {id:btn.getAttribute("value"), type:btn.textContent}
+        data = { id: btn.getAttribute("value"), newStatus: btn.textContent.toLowerCase(), socketId: socket.id }
         socket.emit("changeOrderStatus", data)
     })
 }
 
-socket.on("changeEmp", (data) => {
-    let {orders, status_} = data
-    if(status_ == "current-tab"){
-        status_ = current_tab
-    }
-    while(list.firstChild){
+for (let statusButton of statusButtons) {
+    statusButton.addEventListener("click", () => {
+        socket.emit("retrieveOrdersWithStatus", { status_: statusButton.innerText, socketId: socket.id })
+    })
+}
+
+socket.on("updateOrdersBasedOnStatus", (ordersWithStatus) => {
+    while (list.firstChild) {
         list.removeChild(list.lastChild)
     }
-    for(let order of orders){
-        if(order.status_ == status_){
-            let a = document.createElement("a")
-            a.href = "#"
-            a.classList.add("list-group-item", "list-group-item-action")
-            let div = document.createElement("div")
-            div.classList.add("d-flex", "w-100", "justify-content-between")
-            a.appendChild(div)
-            let h5 = document.createElement("h5")
-            h5.classList.add("mb-1")
-            h5.textContent = order.customer.firstName + " " + order.customer.lastName + "  -  ("+ order.customer.phoneNumber.toString().slice(0,3) + ")" + order.customer.phoneNumber.toString().slice(3,6) + "-" + order.customer.phoneNumber.toString().slice(6,11)
-            div.appendChild(h5)
-            if(order.status_ == 'not ready' || order.status_ == "checked in"){
-                let btn = document.createElement("button")
-                btn.type = "button"
-                btn.classList.add("btn", "btn-dark", "app-btn")
-                btn.value = order._id
-                btn.addEventListener("click", async () => {
-                    data = {id:btn.getAttribute("value"), type:btn.textContent}
-                    socket.emit("changeOrderStatus", data)
-                })
-                if(order.status_ == 'not ready') {
-                    btn.textContent = "Ready"
-                }else{
-                    btn.textContent = "Done"
-                }
-                div.appendChild(btn)
-
+    for (let order of ordersWithStatus) {
+        let a = document.createElement("a")
+        a.href = "#"
+        a.classList.add("list-group-item", "list-group-item-action")
+        let div = document.createElement("div")
+        div.classList.add("d-flex", "w-100", "justify-content-between")
+        a.appendChild(div)
+        let h5 = document.createElement("h5")
+        h5.classList.add("mb-1")
+        h5.textContent = order.customer.firstName + " " + order.customer.lastName + "  -  (" + order.customer.phoneNumber.toString().slice(0, 3) + ")" + order.customer.phoneNumber.toString().slice(3, 6) + "-" + order.customer.phoneNumber.toString().slice(6, 11)
+        div.appendChild(h5)
+        if (order.status_ == 'not ready' || order.status_ == "checked in") {
+            let btn = document.createElement("button")
+            btn.type = "button"
+            btn.classList.add("btn", "btn-dark", "app-btn")
+            btn.value = order._id
+            btn.addEventListener("click", async () => {
+                data = { id: btn.getAttribute("value"), newStatus: btn.textContent.toLowerCase(), socketId: socket.id }
+                socket.emit("changeOrderStatus", data)
+            })
+            if (order.status_ == 'not ready') {
+                btn.textContent = "Ready"
+            } else {
+                btn.textContent = "Done"
             }
-            let p = document.createElement("p")
-            p.classList.add("mb-1")
-            p.textContent = order._id
-            a.appendChild(p)
-            let small = document.createElement("small")
-            small.textContent = order.products[0].name
-            a.appendChild(small)
-            list.appendChild(a)
+            div.appendChild(btn)
+
         }
+        let p = document.createElement("p")
+        p.classList.add("mb-1")
+        p.textContent = order._id
+        a.appendChild(p)
+        let small = document.createElement("small")
+        small.textContent = order.products[0].name
+        a.appendChild(small)
+        list.appendChild(a)
     }
 })
 
+socket.on("refresh", () => {
+    console.log(socket.id)
+    socket.emit("retrieveOrdersWithStatus", { status_: getCurrentStatus(), socketId: socket.id })
+})
 
-checkedInBtn.addEventListener("click", () => {
-    status_ = "checked in"
-    current_tab = "checked in"
-    socket.emit("changeEmp", status_)
-})
-notReadyBtn.addEventListener("click", () => {
-    status_ = "not ready"
-    current_tab = "not ready"
-    socket.emit("changeEmp", status_)
-})
-readyBtn.addEventListener("click", () => {
-    status_ = "ready for pickup"
-    current_tab = "ready for pickup"
-    socket.emit("changeEmp", status_)
-})
-doneBtn.addEventListener("click", () => {
-    status_ = "done"
-    current_tab = "done"
-    socket.emit("changeEmp", status_)
-})
+
+const getCurrentStatus = () => {
+    let currentStatus = 'not ready'
+    for (let radioButton of radioButtons) {
+        if (radioButton.checked) {
+            currentStatus = radioButton.value
+            break
+        }
+    }
+    return currentStatus
+}
