@@ -2,7 +2,7 @@ const express = require("express")
 const app = express();
 const http = require('http');
 const path = require("path")
-const {Server} = require("socket.io")
+const { Server } = require("socket.io")
 const mongoose = require("mongoose")
 const Customer = require("./models/customer")
 const Order = require("./models/order")
@@ -26,14 +26,14 @@ app.set("view engine", "ejs")
 app.set("views", path.join(__dirname, "views"))
 
 
-app.get("/emp", async (req,res) => {
+app.get("/emp", async (req, res) => {
     const orders = await Order.find({}).populate("customer").populate("products")
-    res.render("emp", {orders})
+    res.render("emp", { orders })
 })
 
-app.get("/customer", async (req,res) => {
+app.get("/customer", async (req, res) => {
     const orders = await Order.find({}).populate("customer").populate("products")
-    res.render("customer", {orders})
+    res.render("customer", { orders })
 })
 
 app.get("/", (req, res) => {
@@ -47,36 +47,36 @@ io.on("connection", (socket) => {
     socket.on("changeEmp", async (status_) => {
         const orders = await Order.find({}).populate("customer").populate("products")
         console.log(status_)
-        io.emit("changeEmp", {orders, status_})
+        io.emit("changeEmp", { orders, status_ })
     })
     socket.on("changeCust", async (status_) => {
         const orders = await Order.find({}).populate("customer").populate("products")
         console.log(status_)
-        io.emit("changeCust", {orders, status_})
+        io.emit("changeCust", { orders, status_ })
     })
     socket.on("changeOrderStatus", async (data) => {
         const order = await Order.findById(data.id)
         let status_ = ""
-        if(data.type == "Ready"){
+        if (data.type == "Ready") {
             order.status_ = "ready for pickup"
             status_ = "not ready"
         }
-        else if(data.type == "Done"){
+        else if (data.type == "Done") {
             order.status_ = 'done'
             status_ = 'checked in'
         }
-        else if(data.type == "Check In"){
+        else if (data.type == "Check In") {
             order.status_ = 'checked in'
             status_ = 'ready for pickup'
         }
         await order.save()
         const orders = await Order.find({}).populate("customer").populate("products")
-        if(status_ == 'ready for pick up'){
-            io.emit("changeCust", {orders, status_})
-            io.emit("changeEmp", {orders, status_:"current_tab"})
-        }else{
-        io.emit("changeEmp", {orders, status_})
-        io.emit("changeCust", {orders, status_:"current_tab"})
+        if (status_ == 'ready for pick up') {
+            io.emit("changeCust", { orders, status_ })
+            io.emit("changeEmp", { orders, status_: "current_tab" })
+        } else {
+            io.emit("changeEmp", { orders, status_ })
+            io.emit("changeCust", { orders, status_: "current_tab" })
         }
     })
 })
