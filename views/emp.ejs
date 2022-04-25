@@ -18,9 +18,17 @@
 
 <body>
     <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid text center">
-            <span class=" mx-auto navbar-brand my-auto h1" id="nav-title">CURBSIDE PICK UP</span>
+        <form id="navbar-form" action="/emp/logout" method="GET"></form>
+        <div class="container-fluid">
+            <span class=" mx-auto navbar-brand my-auto h1 text center" id="nav-title">CURBSIDE PICK UP</span>
+            <% if(employee) { %>
+                <span class="navbar-text">
+                    <%= employee.firstName%>
+                </span>
+                <button form="navbar-form" class="btn btn-sm btn-outline-secondary mx-1" type="button">Log Out</button>
+                <% } %>
         </div>
+        </form>
     </nav>
 
     <div class="pickup-list bg-dark">

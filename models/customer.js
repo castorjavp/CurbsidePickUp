@@ -1,11 +1,11 @@
-const mongoose =  require('mongoose');
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const customerSchema = new Schema({
     firstName: String,
     lastName: String,
     phoneNumber: Number,
-    orders: [{type: Schema.Types.ObjectId, ref:"Order"}]
+    orders: [{ type: Schema.Types.ObjectId, ref: "Order" }]
 })
 
 const Customer = mongoose.model("Customer", customerSchema);
